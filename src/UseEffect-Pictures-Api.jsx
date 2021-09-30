@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+// import {FaSpinner} from 'react-icons/fa';
+import Spin from "./spinner.png";
 
 // -----------=^.^=-------- Stylizing components with "styled-components"
 const Container = styled.div`
@@ -52,30 +54,72 @@ const SubTittle = styled(Tittle)`
   font-size: 1rem;
 `;
 
+// -----------=^.^=-------- Animation spinner
+
+const animate = keyframes`
+from{
+    transform: rotate(0deg)
+}
+from {
+    transform: rotate(360deg)
+
+}
+`;
+
+const Spinner = styled.img`
+  width: 1rem;
+  height: 1rem;
+  margin: 10px;
+  animation: ${animate} 1000ms linear infinite;
+`;
+
 // -----------=^.^=-------- My component
 export default function Gallery() {
   const [query, setQuery] = useState("flowers");
   const [totalImagesToFetch, setTotalImagesToFetch] = useState(1);
   const [images, setImages] = useState([]);
   const [searchInputValue, setSearchInputValue] = useState("");
+  // -----=^.^-=-----
+  const [loading, setLoading] = useState(false);
 
   // -----=^.^-=----- To get the data from the Api
+  let url = `https://api.unsplash.com/search/photos?per_page=${totalImagesToFetch}&query=${query}&client_id=QlPLII17-U31C8RMJEeA-ZSoXyf_GcgeWJxUOjCKOn4`;
+
+  // -----=^.^-=----- UseEffect
   useEffect(() => {
-    fetch(
-      `https://api.unsplash.com/search/photos?per_page=${totalImagesToFetch}&query=${query}&client_id=QlPLII17-U31C8RMJEeA-ZSoXyf_GcgeWJxUOjCKOn4`
-    )
+    //-----=^.^-=----- the following code will be execute after mounting and after every update
+    setLoading(true); // -----=^.^-=----- Making the spinner visible
+
+    fetch(url)
       .then((res) => res.json())
       .then((resData) => {
         setImages(resData.results);
+        setLoading(false); // -----=^.^-=----- Making the spinner invisible
       });
+
+    setLoading(false);
   }, [query]);
+
+  
+  // -----=^.^-=----- UseEffect with Async
+  //   useEffect(async() => {
+  //     //-----=^.^-=----- the following code will be execute after mounting and after every update
+  //     setLoading(true); // -----=^.^-=----- Making the spinner visible
+
+  //     let res = await fetch(url);
+  //     let data = await res.json();
+
+  //     await setImages(data.results);
+  //     setLoading(false); // -----=^.^-=----- Making the spinner invisible
+  //   }, [query]);
+
 
   // -----=^.^-=----- To get the input value (search)
   const handleSearchInputChange = function (event) {
     setSearchInputValue(event.target.value);
   };
 
-  // -----=^.^-=----- To get the input value (Number of Pictures)
+  // -----=^.^-=----- To get the input value (Number of images)
   const handleTotalImagesToFetchChange = function (event) {
     setTotalImagesToFetch(event.target.value);
   };
@@ -85,6 +129,7 @@ export default function Gallery() {
       <Container>
         <Tittle>IMAGE PEDIA</Tittle>
         <SubTittle>Type your keyword and value here</SubTittle>
+
         <Input
           placeholder={"Search..."}
           onChange={handleSearchInputChange}
@@ -104,11 +149,25 @@ export default function Gallery() {
         </Button>
 
         <ImagesContainer>
-          {images.map((image, index) => (
-            <ImgDisplay key={index}>
-              <Img src={image.urls.small} key={index + 1}></Img>
-            </ImgDisplay>
-          ))}
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "60%",
+                height: "",
+              }}
+            >
+              <Spinner src={Spin} />
+            </div>
+          ) : (
+            images.map((image, index) => (
+              <ImgDisplay key={index}>
+                <Img src={image.urls.small} key={index + 1}></Img>
+              </ImgDisplay>
+            ))
+          )}
         </ImagesContainer>
       </Container>
     </>
