@@ -97,10 +97,8 @@ export default function Gallery() {
         setLoading(false); // -----=^.^-=----- Making the spinner invisible
       });
 
-    setLoading(false);
   }, [query]);
 
-  
   // -----=^.^-=----- UseEffect with Async
   //   useEffect(async() => {
   //     //-----=^.^-=----- the following code will be execute after mounting and after every update
@@ -112,7 +110,6 @@ export default function Gallery() {
   //     await setImages(data.results);
   //     setLoading(false); // -----=^.^-=----- Making the spinner invisible
   //   }, [query]);
-
 
   // -----=^.^-=----- To get the input value (search)
   const handleSearchInputChange = function (event) {
